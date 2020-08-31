@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,17 +10,18 @@ namespace ultimaterace.classes
 {
     public class UltimateRace
     {
-        private  readonly Scoreboard scoreBoard = new Scoreboard();
-        private  readonly Random random = new Random();
-        private  bool bikeHasStopped, teslaHasStopped, nuclearSubHasStopped, chopperHasStopped;
-        private  int position = 1;
-     
+        private readonly Scoreboard scoreBoard = new Scoreboard();
+        private readonly Random random = new Random();
+        private bool bikeHasStopped, teslaHasStopped, nuclearSubHasStopped, chopperHasStopped;
+        private int position = 1;
+        private Dictionary<string, int> rankings = new Dictionary<string, int>();
+
         public void WelcomeMessage()
         {
 
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("********************************************************");
-            Console.WriteLine($"{Graphics.welcome}".PadRight(Console.WindowWidth-1));
+            Console.WriteLine($"{Graphics.welcome}".PadRight(Console.WindowWidth - 1));
             Thread.Sleep(1000);
             Console.ResetColor();
             Console.WriteLine("\t  To the ULTIMATE RACE");
@@ -46,8 +48,8 @@ namespace ultimaterace.classes
             Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine($"{Graphics.go}");
-            Thread.Sleep(1000);
             Console.ResetColor();
+            Thread.Sleep(1000);
 
         }
         public void StartRace()
@@ -61,7 +63,7 @@ namespace ultimaterace.classes
 
         public void TrackRace()
         {
-            
+
             while (!(bikeHasStopped && teslaHasStopped && chopperHasStopped && nuclearSubHasStopped))
             {
                 // different modes of transport can take shorter routes
@@ -90,30 +92,40 @@ namespace ultimaterace.classes
                 Thread.Sleep(1000);
                 Console.WriteLine("\n-------------------------------------------------------------------------\n");
             }
-            WriteToConsole(Graphics.endRace);
+            WriteToConsole(Graphics.endRace, false, true);
         }
         private void UpdateVehicleEndOfRaceStatus(string vehicle)
         {
-            
+
             if (position == 1)
             {
                 string vehicleWon = $"{vehicle} has won!";
+                rankings.Add(vehicle, 1);
                 WriteToConsole(vehicleWon);
             }
             else
             {
                 string vehicleCameInPosition = $"{vehicle} came in position { position}";
+                rankings.Add(vehicle, position);
                 WriteToConsole(vehicleCameInPosition);
             }
             position++;
-            
         }
-        private void WriteToConsole(string value,bool alert = false)
+        private void WriteToConsole(string value, bool alert = false, bool endRace = false)
         {
-            Console.ForegroundColor = alert ? ConsoleColor.Red :ConsoleColor.Yellow;
-            Console.WriteLine("\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+            Console.ForegroundColor = alert ? ConsoleColor.Red : ConsoleColor.Yellow;
+            Console.WriteLine("\n*************************************************************************");
             Console.WriteLine($"\t\t {value}.");
-            Console.WriteLine("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n");
+            if (endRace)
+            {
+                Console.WriteLine("Vehicle \t\t\t\t\t\t\t Position\n");
+                Console.WriteLine("-----------------------------------------------------------------------");
+                foreach (var vehicle in rankings)
+                {
+                    Console.WriteLine($"{vehicle.Key} \t\t\t\t\t\t\t {vehicle.Value}");
+                }
+            }
+            Console.WriteLine("\n*************************************************************************\n");
             Console.ResetColor();
         }
         private void StartBike()
@@ -130,7 +142,7 @@ namespace ultimaterace.classes
 
                 if (fuel < 0)
                 {
-                    WriteToConsole("Bike out of fuel",true);
+                    WriteToConsole("Bike out of fuel", true);
                     Thread.Sleep((int)(Vehicle.bikeTimetoreFuelHrs * 1000));
                     fuel = (int)Vehicle.bikeFuelTankLiters;
                     Console.WriteLine("Bike is back on the dirt tracks and in the race!!");
@@ -156,7 +168,7 @@ namespace ultimaterace.classes
 
                 if (fuel < 0)
                 {
-                    WriteToConsole("Chopper out of fuel",true);
+                    WriteToConsole("Chopper out of fuel", true);
                     Thread.Sleep(Vehicle.chopperTimeToreFuelHrs * 1000);
                     fuel = Vehicle.chopperFuelCapacityGallons;
                     Console.WriteLine("Chopper is back in the air and in the race!!");
@@ -190,7 +202,7 @@ namespace ultimaterace.classes
 
                 if (batteryLeft < 0)
                 {
-                    WriteToConsole("Tesla out of battery",true);
+                    WriteToConsole("Tesla out of battery", true);
                     Thread.Sleep((int)Vehicle.teslaTimetoreFuelHrs * 1000);
                     batteryLeft = Vehicle.teslaBatteryPack;
                     Console.WriteLine("Tesla is back on the road and in the race!!");
