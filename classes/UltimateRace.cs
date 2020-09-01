@@ -18,7 +18,6 @@ namespace ultimaterace.classes
 
         public void WelcomeMessage()
         {
-
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("********************************************************");
             Console.WriteLine($"{Graphics.welcome}".PadRight(Console.WindowWidth - 1));
@@ -34,7 +33,7 @@ namespace ultimaterace.classes
             Thread.Sleep(1000);
             Console.WriteLine(", and gears");
             Thread.Sleep(1000);
-            Console.WriteLine("  Ladies and Gentlemen, start your engine\n");
+            Console.WriteLine("  Ladies and Gentlemen, start your engines\n");
             Thread.Sleep(1000);
             Console.ForegroundColor = ConsoleColor.Yellow;
             Console.WriteLine("********************************************************");
@@ -100,14 +99,14 @@ namespace ultimaterace.classes
             if (position == 1)
             {
                 string vehicleWon = $"{vehicle} has won!";
-                rankings.Add(vehicle, 1);
+                rankings.Add(vehicle, position);
                 WriteToConsole(vehicleWon);
             }
             else
             {
                 string vehicleCameInPosition = $"{vehicle} came in position { position}";
                 rankings.Add(vehicle, position);
-                WriteToConsole(vehicleCameInPosition);
+                WriteToConsole(vehicleCameInPosition);  
             }
             position++;
         }
@@ -115,14 +114,21 @@ namespace ultimaterace.classes
         {
             Console.ForegroundColor = alert ? ConsoleColor.Red : ConsoleColor.Yellow;
             Console.WriteLine("\n*************************************************************************");
-            Console.WriteLine($"\t\t {value}.");
+            Console.WriteLine($"\t\t{value}");
             if (endRace)
             {
-                Console.WriteLine("Vehicle \t\t\t\t\t\t\t Position\n");
+                Console.WriteLine("Vehicle \t\t\t\t\t\t Position\n");
                 Console.WriteLine("-----------------------------------------------------------------------");
                 foreach (var vehicle in rankings)
                 {
-                    Console.WriteLine($"{vehicle.Key} \t\t\t\t\t\t\t {vehicle.Value}");
+                    if (vehicle.Key == "Chopper" || vehicle.Key == "Nuclear sub")
+                    {
+                        Console.WriteLine($"{vehicle.Key} \t\t\t\t\t\t {vehicle.Value}\n");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{vehicle.Key} \t\t\t\t\t\t\t {vehicle.Value}\n");
+                    }
                 }
             }
             Console.WriteLine("\n*************************************************************************\n");
